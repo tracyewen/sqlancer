@@ -24,7 +24,7 @@ This paper describes PQS, a testing approach to detect various kinds of logic bu
 
 This paper describes NoREC, a metamorphic testing approach to detect optimization bugs, that is, logic bugs that affect the query optimizer. 
 * A preprint is available [here](https://arxiv.org/abs/2007.08292).
-* The paper in the ACM Digital Library is available [here]([here](https://arxiv.org/abs/2007.08292).
+* The paper in the ACM Digital Library is available [here](https://dl.acm.org/doi/10.1145/3368089.3409710).
 
 ```
 @inproceedings{Rigger2020NoREC,
