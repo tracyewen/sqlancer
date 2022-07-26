@@ -5,8 +5,8 @@ The testing approaches implemented in SQLancer are described in the three papers
 ## Testing Database Engines via Pivoted Query Synthesis
 
 This paper describes PQS, a testing approach to detect various kinds of logic bugs in DBMS. 
-A preprint is available [here](https://arxiv.org/pdf/2001.04174.pdf).
-The paper in the ACM Digital Library is available [here](https://dl.acm.org/doi/10.5555/3488766.3488804).
+* A preprint is available [here](https://arxiv.org/pdf/2001.04174.pdf).
+* The paper in the ACM Digital Library is available [here](https://dl.acm.org/doi/10.5555/3488766.3488804).
 
 ```
 @inproceedings{Rigger2020PQS,
