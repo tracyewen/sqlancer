@@ -37,6 +37,7 @@ This paper describes NoREC, a metamorphic testing approach to detect optimizatio
 	doi={10.1145/3368089.3409710}
 }
 ```
+Talk Video ESEC/FSE 2020 on [YouTube](https://www.youtube.com/watch?v=4mbzytrWJhQ)
 
 ## Ternary Logic Partitioning: Detecting Logic Bugs in Database Management Systems
 
