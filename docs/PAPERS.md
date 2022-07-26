@@ -37,7 +37,9 @@ This paper describes NoREC, a metamorphic testing approach to detect optimizatio
 	doi={10.1145/3368089.3409710}
 }
 
-```<img width="1037" alt="Screenshot 2022-07-26 at 11 24 55" src="https://user-images.githubusercontent.com/45636488/180972911-f96e450c-f9b6-442f-b3ce-e4a501115fa6.png" [YouTube](https://www.youtube.com/watch?v=4mbzytrWJhQ)>
+```
+
+<img width="1037" alt="Screenshot 2022-07-26 at 11 24 55" src="https://user-images.githubusercontent.com/45636488/180972911-f96e450c-f9b6-442f-b3ce-e4a501115fa6.png" [YouTube](https://www.youtube.com/watch?v=4mbzytrWJhQ)>
 
 Talk Video ESEC/FSE 2020 on [YouTube](https://www.youtube.com/watch?v=4mbzytrWJhQ)
 
