@@ -2,8 +2,10 @@ package sqlancer.clickhouse.gen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import ru.yandex.clickhouse.domain.ClickHouseDataType;
+import com.clickhouse.client.ClickHouseDataType;
+
 import sqlancer.Randomly;
 import sqlancer.clickhouse.ClickHouseErrors;
 import sqlancer.clickhouse.ClickHouseProvider;
@@ -37,7 +39,7 @@ public class ClickHouseTableGenerator {
         ClickHouseTableGenerator chTableGenerator = new ClickHouseTableGenerator(tableName, globalState);
         chTableGenerator.start();
         ExpectedErrors errors = new ExpectedErrors();
-        ClickHouseErrors.addTableManipulationErrors(errors);
+        ClickHouseErrors.addExpectedExpressionErrors(errors);
         return new SQLQueryAdapter(chTableGenerator.sb.toString(), errors, true);
     }
 
@@ -55,7 +57,7 @@ public class ClickHouseTableGenerator {
         sb.append(" (");
         int nrColumns = 1 + Randomly.smallNumber();
         for (int i = 0; i < nrColumns; i++) {
-            columns.add(ClickHouseSchema.ClickHouseColumn.createDummy(ClickHouseCommon.createColumnName(i)));
+            columns.add(ClickHouseSchema.ClickHouseColumn.createDummy(ClickHouseCommon.createColumnName(i), null));
         }
         for (int i = 0; i < nrColumns; i++) {
             if (i != 0) {
@@ -79,8 +81,8 @@ public class ClickHouseTableGenerator {
         if (engine == ClickHouseEngine.MergeTree) {
             if (Randomly.getBoolean()) {
                 sb.append(" ORDER BY ");
-                ClickHouseExpression expr = gen
-                        .generateExpression(ClickHouseSchema.ClickHouseLancerDataType.getRandom());
+                ClickHouseExpression expr = gen.generateExpressionWithColumns(
+                        columns.stream().map(c -> c.asColumnReference(null)).collect(Collectors.toList()), 0);
                 sb.append(ClickHouseToStringVisitor.asString(expr));
             } else {
                 sb.append(" ORDER BY tuple() ");
@@ -88,14 +90,14 @@ public class ClickHouseTableGenerator {
 
             if (Randomly.getBoolean()) {
                 sb.append(" PARTITION BY ");
-                ClickHouseExpression expr = gen
-                        .generateExpression(ClickHouseSchema.ClickHouseLancerDataType.getRandom());
+                ClickHouseExpression expr = gen.generateExpressionWithColumns(
+                        columns.stream().map(c -> c.asColumnReference(null)).collect(Collectors.toList()), 0);
                 sb.append(ClickHouseToStringVisitor.asString(expr));
             }
             if (Randomly.getBoolean()) {
                 sb.append(" SAMPLE BY ");
-                ClickHouseExpression expr = gen
-                        .generateExpression(ClickHouseSchema.ClickHouseLancerDataType.getRandom());
+                ClickHouseExpression expr = gen.generateExpressionWithColumns(
+                        columns.stream().map(c -> c.asColumnReference(null)).collect(Collectors.toList()), 0);
                 sb.append(ClickHouseToStringVisitor.asString(expr));
             }
             // TODO: PRIMARY KEY

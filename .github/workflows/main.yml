@@ -87,11 +87,11 @@ jobs:
         run: mvn -B package -DskipTests=true
       - name: Set up ClickHouse
         run: |
-          docker pull yandex/clickhouse-server:latest
-          docker run --ulimit nofile=262144:262144 --name clickhouse-server -p8123:8123 -d yandex/clickhouse-server:latest
+          docker pull clickhouse/clickhouse-server:latest
+          docker run --ulimit nofile=262144:262144 --name clickhouse-server -p8123:8123 -d clickhouse/clickhouse-server:latest
           sleep 5
       - name: Run Tests
-        run: CLICKHOUSE_AVAILABLE=true mvn -Dtest=ClickHouseBinaryComparisonOperationTest test
+        run: CLICKHOUSE_AVAILABLE=true mvn -Dtest=ClickHouseBinaryComparisonOperationTest,TestClickHouse,ClickHouseOperatorsVisitorTest,ClickHouseToStringVisitorTest test
 
 
   cockroachdb:
@@ -109,13 +109,38 @@ jobs:
         run: mvn -B package -DskipTests=true
       - name: Set up CockroachDB
         run: |
-          wget -qO- https://binaries.cockroachdb.com/cockroach-v21.1.7.linux-amd64.tgz | tar  xvz
-          cd cockroach-v21.1.7.linux-amd64/ && ./cockroach start-single-node --insecure &
+          wget -qO- https://binaries.cockroachdb.com/cockroach-v22.2.0-beta.4.linux-amd64.tgz | tar  xvz
+          cd cockroach-v22.2.0-beta.4.linux-amd64/ && ./cockroach start-single-node --insecure &
           sleep 10
       - name: Create SQLancer user
-        run: cd cockroach-v21.1.7.linux-amd64/ && ./cockroach sql --insecure -e "CREATE USER sqlancer; GRANT admin to sqlancer" && cd ..
+        run: cd cockroach-v22.2.0-beta.4.linux-amd64/ && ./cockroach sql --insecure -e "CREATE USER sqlancer; GRANT admin to sqlancer" && cd ..
       - name: Run Tests
         run: COCKROACHDB_AVAILABLE=true mvn -Dtest=TestCockroachDB test
+
+  databend:
+    name: DBMS Tests (Databend)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Build SQLancer
+        run: mvn -B package -DskipTests=true
+      - name: Set up Databend
+        run: |
+          sudo apt update
+          sudo apt install mysql-client
+          docker pull datafuselabs/databend-query
+          docker run --net=host datafuselabs/databend-query &
+      - name: Create SQLancer user
+        run: mysql -uroot -h127.0.0.1 -P3307 -e "CREATE USER 'sqlancer' IDENTIFIED BY 'sqlancer'; GRANT ALL ON *.* TO sqlancer;"
+      - name: Run Tests
+        run: |
+          DATABEND_AVAILABLE=true mvn -Dtest=TestDatabend test
 
   duckdb:
     name: DBMS Tests (DuckDB)
@@ -269,6 +294,27 @@ jobs:
         run: sudo mysql -h 127.0.0.1 -P 4000 -u root -D test -e "CREATE USER 'sqlancer'@'%' IDENTIFIED WITH mysql_native_password BY 'sqlancer'; GRANT ALL PRIVILEGES ON *.* TO 'sqlancer'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;"
       - name: Run Tests
         run: TIDB_AVAILABLE=true mvn -Dtest=TestTiDB test
+
+  yugabyte:
+    name: DBMS Tests (YugabyteDB)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Build SQLancer
+        run: mvn -B package -DskipTests=true
+      - name: Setup Yugabyte
+        run: |
+          docker pull yugabytedb/yugabyte:latest
+          docker run -d --name yugabyte -p7000:7000 -p9000:9000 -p5433:5433 -p9042:9042 yugabytedb/yugabyte:latest bin/yugabyted start --daemon=false 
+          sleep 5
+      - name: Run Tests
+        run: YUGABYTE_AVAILABLE=true mvn -Dtest=TestYugabyte test
 
   java13:
     name: Java 13 Compatibility (DuckDB)
